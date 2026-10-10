@@ -1,21 +1,14 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
-// 1. Crear el Contexto Global de Tema
 export const ThemeContext = createContext();
 
-// 2. Proveedor del Contexto de Tema (Tema Claro y Oscuro)
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('crocheterias_theme') || 'light';
   });
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('crocheterias_theme', theme);
   }, [theme]);
 
@@ -28,4 +21,12 @@ export const ThemeProvider = ({ children }) => {
       {children}
     </ThemeContext.Provider>
   );
+};
+
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error('useTheme debe ser usado dentro de un ThemeProvider');
+  }
+  return context;
 };
